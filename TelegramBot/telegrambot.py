@@ -32,7 +32,7 @@ updater=""
 dispatcher=""
 Endpoint = "http://IP_ADDR:9000/"
 Headers = {"Authorization": "Bearer THE_HIVE_API_KEY"}
-Telegram_Key = "1739785779:AAEVnGEnwFHgAWaAZtk7bvOwX_iSFsmCDlY"
+Telegram_Key = "TELEGRAM_API_KEY"
 
 # Enable logging
 logging.basicConfig(
