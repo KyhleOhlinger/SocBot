@@ -1,0 +1,28 @@
+- name: Run Telegram Bot
+  hosts: "*"
+  become: true
+  become_user: root
+  become_method: sudo
+  gather_facts: false
+
+  tasks:
+    - name: Stat CM script
+      stat: path=/home/vagrant/TelegramBot
+      register: cm_stat
+
+    - name: Install Pip Requirements
+      pip:
+        requirements: /home/vagrant/TelegramBot/requirements.txt
+
+    - name: Adding in Python-Telegram-Bot's Git Repo
+      git:
+        repo: 'https://github.com/python-telegram-bot/python-telegram-bot' 
+        recursive: yes
+        dest: /home/vagrant/TelegramBot/python-telegram-bot/
+
+    - name: Install Python Telegram Bot Pip Requirements
+      pip:
+        requirements: /home/vagrant/TelegramBot/python-telegram-bot/requirements.txt
+
+    - name: Install the Python-Telegram-Bot 
+      shell: "(cd /home/vagrant/TelegramBot/python-telegram-bot/; sudo python3 setup.py install)"

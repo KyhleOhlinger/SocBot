@@ -1,0 +1,58 @@
+- name: Run Case Management Host
+  hosts: "*"
+  gather_facts: false
+  tasks:
+    - name: Install required openjdk packages
+      apt:
+        name: openjdk-8-jdk
+        state: present
+
+    - name: Stat CM script
+      stat: path=/home/vagrant/CaseManagement
+      register: cm_stat
+
+    - name: Run the ES setup script
+      command: bash /home/vagrant/CaseManagement/es_setup.sh
+      when: cm_stat.stat.exists
+
+    - name: Update and Upgrade hosts
+      apt:
+        upgrade: yes
+        update_cache: yes
+
+    - name: Run a CaseManagement script
+      command: bash /home/vagrant/CaseManagement/th_setup.sh
+      when: cm_stat.stat.exists
+    
+    - name: Move ES Config Script
+      command: cp /home/vagrant/CaseManagement/elasticsearch.yml /etc/elasticsearch/elasticsearch.yml
+      when: cm_stat.stat.exists
+
+    - name: Move TH Config Script
+      command: cp /home/vagrant/CaseManagement/thehive_application.conf /etc/thehive/application.conf
+      when: cm_stat.stat.exists
+
+    - name: Move Cortex Config Script
+      command: cp /home/vagrant/CaseManagement/cortex_application.conf /etc/cortex/application.conf
+      when: cm_stat.stat.exists
+
+    # Cortex Analyzers
+    - name: Setup the analyzer config script 
+      command: chmod a+x /home/vagrant/CaseManagement/analyser_setup.sh
+      when: cm_stat.stat.exists
+
+    - name: Run Cortex Analysers Configuration
+      command: bash /home/vagrant/CaseManagement/analyser_setup.sh
+      when: cm_stat.stat.exists
+
+    - name: Start service for theHive
+      ansible.builtin.service:
+        name: thehive
+        enabled: yes
+        state: started
+
+    - name: Start service for Cortex
+      ansible.builtin.service:
+        name: cortex
+        enabled: yes
+        state: started

@@ -1,0 +1,22 @@
+- hosts: all
+  become: true
+  become_user: root
+  become_method: sudo
+  tasks:   
+    - name: Update and Upgrade hosts
+      apt:
+        upgrade: yes
+        update_cache: yes
+        #cache_valid_time: 86400 # Don't upgrade if Cache was updated less than a day ago
+
+    - name: Remove Python 2.7
+      apt:
+        name: python=2.7
+        state: absent
+ 
+    - name: Install Python 3
+      apt:
+        name: ['python3','python3-pip','tmux']
+
+    - name: Create symbolic link 
+      shell: "alias python=python3"
